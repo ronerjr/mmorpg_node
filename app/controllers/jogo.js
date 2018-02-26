@@ -1,9 +1,9 @@
 module.exports.jogo = function (application, request, response) {
     if (request.session.autorizado) {
         var jogoDao = new application.app.models.JogoDAO();
-        var comandoInvalido = request.query.comandoInvalido || false;
+        var msg = request.query.msg || undefined;
 
-        jogoDao.iniciaJogo(response, request.session.usuario, request.session.casa, comandoInvalido);
+        jogoDao.iniciaJogo(response, request.session.usuario, request.session.casa, msg);
     } else {
         response.redirect('/');
     }
@@ -18,24 +18,24 @@ module.exports.sair = function (application, request, response) {
 }
 
 module.exports.suditos = function (application, request, response) {
-    if (request.session.autorizado) {
-        response.render("aldeoes");
-    } else {
-        response.redirect("/");
+    if (!request.session.autorizado) {
+        response.send("Precisa fazer login!");
+        return;
     }
+    response.render("aldeoes");
 }
 
 module.exports.pergaminhos = function (application, request, response) {
-    if (request.session.autorizado) {
-        response.render("pergaminhos");
-    } else {
-        response.redirect("/");
+    if (!request.session.autorizado) {
+        response.send("Precisa fazer login!");
     }
+    var jogoDAO = new application.app.models.JogoDAO();
+    jogoDAO.getAcoes(request.session.usuario, response);
 }
 
 module.exports.ordenarAcaoSudito = function (application, request, response) {
     if (!request.session.autorizado) {
-        response.redirect("/");
+        response.send("Precisa fazer login!");
         return;
     }
     var formData = request.body;
@@ -46,9 +46,18 @@ module.exports.ordenarAcaoSudito = function (application, request, response) {
     var errors = request.validationErrors();
 
     if (errors) {
-        response.redirect('jogo?comandoInvalido=true');
+        response.redirect('jogo?msg=error');
         return;
     }
 
-    response.send('ok')
+    formData.usuario = request.session.usuario;
+    var jogoDAO = new application.app.models.JogoDAO();
+    jogoDAO.acao(formData);
+    response.redirect('jogo?msg=success');
+}
+
+module.exports.revogarAcao = function (application, request, response) {
+    var query = request.query;
+    var jogoDAO = new application.app.models.JogoDAO();
+    jogoDAO.revogarAcao(query.idAcao, response);
 }

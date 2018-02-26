@@ -1,3 +1,5 @@
+var crypto = require('crypto');
+
 function UsuariosDAO(){
 }
 
@@ -5,6 +7,7 @@ UsuariosDAO.prototype.inserirUsuario = function(usuario) {
     global.mongo.connect(global.dbUrl, function(error, client){
         const db = client.db(global.dbName);
         db.collection('usuarios', function(error, collection){
+            usuario.senha = crypto.createHash('MD5').update(usuario.senha).digest('hex');
             collection.insert(usuario);
         });
         client.close();
@@ -18,6 +21,7 @@ UsuariosDAO.prototype.autenticar = function(login, request, response) {
         } else {
             const db = client.db(global.dbName);
             db.collection('usuarios', function(error, collection){
+                usuario.senha = crypto.createHash('MD5').update(usuario.senha).digest('hex');
                 collection.find(login).toArray(function(error, result){
                     if(error) {
                         console.error(error);

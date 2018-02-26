@@ -2,9 +2,26 @@
 	<h3>Pergaminhos</h3>
 	
 	<ul>
-		<li>1 enforcamento(s) programado - <small>restam 00000 segundos - <a href="#">revogar ordem</a></small></li>
-		<li>2 aldeão(ões) em treinamento de magia - <small>restam 00000 segundos - <a href="#">revogar ordem</a></small></li>
-		<li>1 aldeão(ões) em treinamento de história - <small>restam 00000 segundos - <a href="#">revogar ordem</a></small></li>
-		<li>5 aldeão(ões) coletando recursos - <small>restam 00000 segundos - <a href="#">revogar ordem</a></small></li>
+	<% data.forEach(function(acao){ %>
+		<%
+			var descricao = undefined;
+			switch(parseInt(acao.acao)){
+				case 1: 
+					descricao = 'aldeão(ões) coletando recursos';
+					break;
+				case 2: 
+					descricao = 'enforcamento(s) programado(s)';
+					break;
+				case 3: 
+					descricao = 'aldeão(ões) em treinamento de história';
+					break;
+				case 4: 
+					descricao = 'aldeão(ões) em treinamento de magia';
+					break;
+			}
+			var tempo = Math.round((acao.termino - new Date().getTime()) / 1000);
+		%>
+		<li><%=acao.quantidade%> <%=descricao%> - <small>restam  segundos - <span class="tempo-restante"><%=tempo%></span> - <a href="/revogarAcao?idAcao=<%=acao._id%>">revogar ordem</a></small></li>
+	<% }) %>
 	</ul>
 </div>

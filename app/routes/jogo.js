@@ -18,4 +18,8 @@ module.exports = function(application){
 	application.post('/ordenarAcaoSudito', function(request, response){
 		application.app.controllers.jogo.ordenarAcaoSudito(application, request, response);
 	});
+
+	application.get('/revogarAcao', function(request, response){
+		application.app.controllers.jogo.revogarAcao(application, request, response);
+	});
 }

@@ -37,9 +37,20 @@
 						method: 'get',
 						success: function(data){
 							$('#acoes').html(data);
+							clearTimeout(timer);
+							cronometro()
 						}
 					});
 				});
+				var timer = null;
+				function cronometro() {
+					$('.tempo-restante').each(function(){
+						var segundos = $(this).html();
+						var atual = parseInt(segundos) - 1;
+						segundos = $(this).html(atual);
+					});
+					timer = setTimeout(cronometro, 1000);
+				}
 			});
 		</script>
 
@@ -57,11 +68,17 @@
 
 		<div class="container">
 		
-			<% if(comandoInvalido) { %>
+			<% if(msg === "error") { %>
 				<div class="alert alert-danger" id="msg_error">
 					<strong>Operação inválida</strong>
 				</div>
 			<% } %>
+
+			<% if(msg === "success") { %>
+			<div class="alert alert-info" id="msg_error">
+				<strong>Operação realizada com sucesso</strong>
+			</div>
+		<% } %>
 	    	
 			<div class="row">
 	    		<div class="col-sm-3 casa">
